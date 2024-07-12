@@ -35,7 +35,6 @@ export default function Profile() {
         setFilePerc(Math.round(progress));
       },
       (error)=>{
-        console.log("error=",error);
         setFileUploadError(true);
       },
       ()=>{
