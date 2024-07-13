@@ -140,6 +140,7 @@ export default function Profile() {
     }
   }
 
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7 '>Profile</h1>
@@ -197,7 +198,9 @@ export default function Profile() {
               </Link>
               <div className='flex flex-col items-center'>
                 <button className='uppercase text-red-700 ' onClick={()=>handleListingDelete(listing._id)}>delete</button>
-                <button className='uppercase text-green-700 '>edit</button>
+                <Link to={`/update-listing/${listing._id}`}>
+                  <button className='uppercase text-green-700 '>edit</button>
+                </Link>
               </div>
             </div>
           ))}
