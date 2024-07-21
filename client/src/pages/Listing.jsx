@@ -1,18 +1,24 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
+
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore from 'swiper';
 import { Navigation} from 'swiper/modules';
-import 'swiper/css/bundle';
+ import 'swiper/css/bundle';
 import { FaBath, FaBed, FaChair, FaMapMarkerAlt, FaParking, FaShare } from 'react-icons/fa';
+import { useSelector } from 'react-redux';
+import Contact from '../components/Contact';
+
 
 export default function Listing() {
-    SwiperCore.use([Navigation]);
+  SwiperCore.use([Navigation]);
   const params = useParams();
   const [ listing, setListing ] = useState(null);
   const [ loading, setLoading ] = useState(true);
   const [ error, setError] = useState(false);
   const [ copied, setCopied ] = useState(false);
+  const { currentUser }= useSelector((state) => state.user);
+  const [ contact, setContact] = useState(false);
   
   useEffect(() => {
     const fetchListing = async () =>{
@@ -34,26 +40,27 @@ export default function Listing() {
     fetchListing()
   },[ params.id]);
 
+ 
     return( 
         <main>
             { loading && <p className='text-center my-7 text-2xl'>Loading....</p>}
             { error && <p className='text-center my-7 text-2xl'>something went wrong!</p>}
-            { (listing && !loading && !error && 
-                <div>
+            { listing && !loading && !error && (
+                <>
                     <Swiper navigation>
                         { 
                             listing.imageUrls.map((url) => (
                                 <SwiperSlide key={url}>
                                     <div className='h-[550px]' style={{
-                                        background: `url(${url}) center 
-                                        no-repeat`,
-                                        backgrondSize : 'cover',
+                                        background: `url(${url}) center no-repeat`,
+                                        backgroundSize: 'cover',
                                     }}>
                                     </div>
                                 </SwiperSlide>
                             ))
                         }
                     </Swiper>
+               
                     <div className='fixed top-[13%] right-[3%] z-10 border rounded-full w-12 h-12 flex justify-center items-center bg-slate-100 cursor-pointer'>
                         <FaShare
                             className='text-slate-500'
@@ -71,8 +78,8 @@ export default function Listing() {
                             <p className='fixed top-[23%] right-[5%] z-10 rounded-md bg-slate-100 p-2'>Link copied!</p>
                         )
                     }
-                    <div className='flex flex-col max-w-4xl p-3 mx-auto  gap-4'>
-                        <p className='text-2xl font-semibold'>
+                    <div className='flex flex-col max-w-4xl p-3 mx-auto gap-4'>
+                        <p className='text-2xl font-bold'>
                             { listing.name} - ${' '}
                             {
                                 listing.offer
@@ -107,19 +114,19 @@ export default function Listing() {
                             <li className='flex items-center gap-1 whitespace-nowrap'>
                                 <FaBed className='text-lg'/>
                                 {
-                                    listing.bedrooms > 1 ? `${listing.bedrooms} beds` : `${listing.bedrooms} bed`
+                                    listing.bedrooms > 1 ? `${listing.bedrooms} Bedrooms` : `${listing.bedrooms} Bedroom`
                                 }
                             </li>
                             <li className='flex items-center gap-1 whitespace-nowrap'>
                                 <FaBath className='text-lg'/>
                                 {
-                                    listing.bathrooms > 1 ? `${listing.bathrooms} bathrooms` : `${listing.bathrooms} bathroom`
+                                    listing.bathrooms > 1 ? `${listing.bathrooms} Bathrooms` : `${listing.bathrooms} Bathroom`
                                 }
                             </li>
                             <li className='flex items-center gap-1 whitespace-nowrap'>
                                 <FaParking className='text-lg'/>
                                 {
-                                    listing.parking ? `parking spot` : `no parking`
+                                    listing.parking ? `Parking spot` : `No Parking`
                                 }
                             </li>
                             <li className='flex items-center gap-1 whitespace-nowrap'>
@@ -128,10 +135,19 @@ export default function Listing() {
                                     listing.furnished  ? `Furnished` : `Unfurnished`
                                 }
                             </li>
-
                         </ul>
+                        {
+                            currentUser && listing.userRef !== currentUser._id && !contact && (
+                                <button onClick={()=>setContact(true)} className='bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3'>
+                                    Contact Landlord
+                                </button>
+                            )
+                        }
+                        {
+                            contact && <Contact listing={listing} />
+                        }
                     </div>
-                </div>
+                </>
             )}
         </main>
     );
