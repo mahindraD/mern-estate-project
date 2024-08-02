@@ -1,5 +1,6 @@
 import  { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import ListingItem from '../components/ListingItem';
 
 export default function Search() {
     
@@ -15,8 +16,7 @@ export default function Search() {
     });
     const [ loading, setLoading ] = useState(false);
     const [ listings, setListings] = useState([]);
-    console.log(listings);
-
+    
     useEffect(()=>{
         const urlParams = new URLSearchParams(location.search);
         const searchTermFromUrl = urlParams.get('searchTerm');
@@ -24,16 +24,16 @@ export default function Search() {
         const parkingFromUrl = urlParams.get('parking');
         const furnishedFromUrl = urlParams.get('furnished');
         const offerFromUrl = urlParams.get('offer');
-        const sortFormUrl = urlParams.get('sort');
-        const orderFormUrl = urlParams.get('order');
+        const sortFromUrl = urlParams.get('sort');
+        const orderFromUrl = urlParams.get('order');
          
         if( searchTermFromUrl || 
             typeFromUrl ||
             parkingFromUrl ||
             furnishedFromUrl ||
             offerFromUrl ||
-            sortFormUrl ||
-            orderFormUrl
+            sortFromUrl ||
+            orderFromUrl
         ){
             setSidebardata({
                 searchTerm: searchTermFromUrl || "",
@@ -41,9 +41,9 @@ export default function Search() {
                 parking: parkingFromUrl === 'true' ? true : false,
                 furnished: furnishedFromUrl === 'true' ? true : false,
                 offer: offerFromUrl === 'true' ? true: false,
-                sort: sortFormUrl==='regularPrice' ? 'regularPrice' : 'createdAt',
-                order : orderFormUrl==='asc'? 'asc' : 'desc',
-            })
+                sort: sortFromUrl || 'createdAt',
+                order : orderFromUrl || 'desc',
+            });
         }
 
         const fetchLisings = async () =>{
@@ -57,7 +57,6 @@ export default function Search() {
             setLoading(false);
         }
         fetchLisings();
-
     },[location.search]);
 
     
@@ -182,7 +181,23 @@ export default function Search() {
             </form>
         </div>
         <div className=''>
-            <h1 className='text-3xl font-semibold border-b p-3 text-slate-700 mt-5'>Listing results:</h1>
+            <h1 className='text-3xl font-semibold border-b text-slate-700 mt-5'>Listing results:</h1>
+            
+            <div className='flex flex-col p-7'>
+                {!loading && listings.length === 0 && (
+                    <p className='text-3xl text-slate-700 p-7'>No listing found</p>
+                )}
+                {
+                    loading && (
+                        <p className='text-xl text-slate-700 text-center w-full'>Loading...</p>
+                    )
+                }
+                {
+                    !loading && listings && listings.map((listing) => {
+                        <ListingItem key={listing._id} listing={listing} />
+                    })
+                }
+            </div>
         </div>
     </div>
   )
