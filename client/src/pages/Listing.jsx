@@ -4,10 +4,12 @@ import { useParams } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore from 'swiper';
 import { Navigation} from 'swiper/modules';
- import 'swiper/css/bundle';
+import 'swiper/css/bundle';
 import { FaBath, FaBed, FaChair, FaMapMarkerAlt, FaParking, FaShare } from 'react-icons/fa';
 import { useSelector } from 'react-redux';
 import Contact from '../components/Contact';
+import { useNavigate } from 'react-router-dom';
+import { list } from 'firebase/storage';
 
 
 export default function Listing() {
@@ -19,6 +21,7 @@ export default function Listing() {
   const [ copied, setCopied ] = useState(false);
   const { currentUser }= useSelector((state) => state.user);
   const [ contact, setContact] = useState(false);
+  const navigate = useNavigate();
   
   useEffect(() => {
     const fetchListing = async () =>{
@@ -31,6 +34,9 @@ export default function Listing() {
                 setLoading(false);
             }
             setLoading(false);
+            if(data.offer === true){
+                data.discountPrice = data.regularPrice-data.discountPrice;
+            }
             setListing(data);
         } catch(error){
             setError(true);
@@ -42,7 +48,7 @@ export default function Listing() {
 
  
     return( 
-        <main>
+        <main className='mb-6'>
             { loading && <p className='text-center my-7 text-2xl'>Loading....</p>}
             { error && <p className='text-center my-7 text-2xl'>something went wrong!</p>}
             { listing && !loading && !error && (
@@ -83,8 +89,7 @@ export default function Listing() {
                             { listing.name} - ${' '}
                             {
                                 listing.offer
-                                ? listing.discountPrice.toLocaleString('en-US')
-                                : listing.regularPrice.toLocaleString('en-US')
+                                ? (listing.discountPrice.toLocaleString('en-US')): listing.regularPrice.toLocaleString('en-US')
                             } 
                             {
                                 listing.type === 'rent' && ' / month'
@@ -101,7 +106,9 @@ export default function Listing() {
                             {
                                 listing.offer && (
                                 <p className='bg-green-900 w-full max-w-[200px] text-white text-center p-1 rounded-md'>
-                                    ${+listing.regularPrice - +listing.discountPrice}
+                                    $ {
+                                        listing.offer ? listing.discountPrice : listing.regularPrice
+                                    }
                                 </p>
                                 )
                             }
@@ -145,6 +152,13 @@ export default function Listing() {
                         }
                         {
                             contact && <Contact listing={listing} />
+                        }
+                        {
+                            currentUser && listing.userRef === currentUser._id && (
+                                <button onClick={()=>{navigate(`/update-listing/${listing._id}`)}} className='bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 p-3'>
+                                    Update listing
+                                </button>
+                            )
                         }
                     </div>
                 </>

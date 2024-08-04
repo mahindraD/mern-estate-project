@@ -11,7 +11,7 @@ export default function Search() {
         parking: false,
         furnished: false,
         offer: false,
-        sort: 'createdAt',
+        sort: 'created_at',
         order: 'desc',
     });
     const [ loading, setLoading ] = useState(false);
@@ -36,12 +36,12 @@ export default function Search() {
             orderFromUrl
         ){
             setSidebardata({
-                searchTerm: searchTermFromUrl || "",
+                searchTerm: searchTermFromUrl || '',
                 type: typeFromUrl || 'all',
                 parking: parkingFromUrl === 'true' ? true : false,
                 furnished: furnishedFromUrl === 'true' ? true : false,
                 offer: offerFromUrl === 'true' ? true: false,
-                sort: sortFromUrl || 'createdAt',
+                sort: sortFromUrl || 'created_at',
                 order : orderFromUrl || 'desc',
             });
         }
@@ -49,7 +49,6 @@ export default function Search() {
         const fetchLisings = async () =>{
             setLoading(true);
             const searchQuery = urlParams.toString();
-
             const res = await fetch(`/api/listing/get?${searchQuery}`);
             const data = await res.json();
          
@@ -59,7 +58,6 @@ export default function Search() {
         fetchLisings();
     },[location.search]);
 
-    
     const handleChange = (e) => {
         if(e.target.id === 'all' || e.target.id === 'rent' || e.target.id === 'sale'){
             setSidebardata({...sidebardata, type:e.target.id});
@@ -105,7 +103,7 @@ export default function Search() {
                     <label className='whitespace-nowrap font-semibold '>Search Term:</label>
                     <input type='text' 
                         id='searchTerm' 
-                        placeholder='search..' 
+                        placeholder='search....' 
                         className='border rounded-lg p-3 w-full'
                         value={sidebardata.searchTerm}
                         onChange={handleChange}
@@ -169,12 +167,12 @@ export default function Search() {
                     <label className='font-semibold'>Sort:</label>
                     <select
                         onChange={handleChange}
-                        defaultValue={'createdAt_desc'} 
+                        defaultValue={'created_at_desc'} 
                         id="sort_order" className='border rounded-lg p-3'>
                         <option value={'regularPrice_desc'} >Price high to low</option>
                         <option value={'regularPrice_asc'} >Price low to high</option>
                         <option value={'createdAt_desc'}>Latest</option>
-                        <option value={'createdAt_asc'} >Oldest</option>
+                        <option value={'createdAt_asc'}>Oldest</option>
                     </select>
                 </div>
                 <button className='bg-slate-700 text-white p-3 rounded-lg hover:opacity-95 uppercase'>Search</button>
@@ -182,8 +180,7 @@ export default function Search() {
         </div>
         <div className=''>
             <h1 className='text-3xl font-semibold border-b text-slate-700 mt-5'>Listing results:</h1>
-            
-            <div className='flex flex-col p-7'>
+            <div className='flex flex-row flex-wrap p-7'>
                 {!loading && listings.length === 0 && (
                     <p className='text-3xl text-slate-700 p-7'>No listing found</p>
                 )}
@@ -193,9 +190,9 @@ export default function Search() {
                     )
                 }
                 {
-                    !loading && listings && listings.map((listing) => {
+                    !loading && listings && listings.map((listing) => 
                         <ListingItem key={listing._id} listing={listing} />
-                    })
+                    )
                 }
             </div>
         </div>
