@@ -9,7 +9,6 @@ import { FaBath, FaBed, FaChair, FaMapMarkerAlt, FaParking, FaShare } from 'reac
 import { useSelector } from 'react-redux';
 import Contact from '../components/Contact';
 import { useNavigate } from 'react-router-dom';
-import { list } from 'firebase/storage';
 
 
 export default function Listing() {
